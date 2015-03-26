@@ -1,0 +1,46 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from ViewPinAuthorityService WSDL service -->
+
+  <service name="PinAuthority" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlServiceElement" value="ViewPinAuthorityService"/>
+      <parameter name="schemaUnqualified" value="http://authority.viewpin.safenetinc.com"/>
+      <parameter name="wsdlServicePort" value="ViewPinAuthority"/>
+       <parameter name="className" value="com.safenetinc.viewpin.authority.ViewPinAuthority"/>
+      <parameter name="wsdlPortType" value="ViewPinAuthority"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="processViewPinRequest" qname="operNS:processViewPinRequest" xmlns:operNS="http://authority.viewpin.safenetinc.com" returnQName="processViewPinRequestReturn" returnType="rtns:PinAuthorityResponse" xmlns:rtns="http://authority.viewpin.safenetinc.com" soapAction="" >
+        <parameter qname="viewPinRequest" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="requestType" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="cardHolderDetails" type="tns:CardHolderDetails" xmlns:tns="http://authority.viewpin.safenetinc.com"/>
+      </operation>
+      <parameter name="allowedMethods" value="processViewPinRequest"/>
+
+      <typeMapping
+        xmlns:ns="http://authority.viewpin.safenetinc.com"
+        qname="ns:PinAuthorityResponse"
+        type="java:com.safenetinc.viewpin.authority.PinAuthorityResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://authority.viewpin.safenetinc.com"
+        qname="ns:CardHolderDetails"
+        type="java:com.safenetinc.viewpin.authority.CardHolderDetails"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>

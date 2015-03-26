@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:vp="http://www.safenet-inc.com/ns/viewpin"
+	targetNamespace="http://www.safenet-inc.com/ns/viewpin"
+	elementFormDefault="qualified" finalDefault="" blockDefault=""
+	attributeFormDefault="unqualified">
+	<simpleType name="PrimaryAccountNumberType">
+		<restriction base="string">
+			<pattern value="[0-9]{16}" />
+		</restriction>
+	</simpleType>
+	<simpleType name="VerificationValueType">
+		<restriction base="string">
+			<pattern value="[0-9]{3}" />
+		</restriction>
+	</simpleType>
+	<simpleType name="PinType">
+		<restriction base="string">
+			<pattern value="[0-9]{4,12}" />
+		</restriction>
+	</simpleType>
+	<complexType name="CardPinType">
+		<sequence>
+			<element name="Pin" type="vp:PinType" minOccurs="1"
+				maxOccurs="1" />
+   		</sequence>
+	</complexType>
+	<simpleType name="ExpiryDateMonthType">
+		<restriction base="integer">
+			<minInclusive value="1" />
+			<maxInclusive value="12" />
+		</restriction>
+	</simpleType>
+	<simpleType name="ExpiryDateYearType">
+		<restriction base="integer">
+			<minInclusive value="0" />
+			<maxInclusive value="99" />
+		</restriction>
+	</simpleType>
+	<complexType name="ExpiryDateType">
+		<sequence>
+			<element name="Month" type="vp:ExpiryDateMonthType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="Year" type="vp:ExpiryDateYearType" minOccurs="1"
+				maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="CardHolderVerificationType">
+		<sequence>
+			<element name="VerificationValue" type="vp:VerificationValueType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="ExpiryDate" type="vp:ExpiryDateType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="PrimaryAccountNumber" type="vp:PrimaryAccountNumberType"
+				minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="PinChangeDataType">
+		<sequence>
+			<element name="VerificationValue" type="vp:VerificationValueType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="ExpiryDate" type="vp:ExpiryDateType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="PrimaryAccountNumber" type="vp:PrimaryAccountNumberType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="OldPin" type="vp:CardPinType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="NewPin" type="vp:CardPinType"
+				minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<simpleType name="TransactionIdentifierType">
+		<restriction base="string">
+			<pattern
+				value="[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}" />
+		</restriction>
+	</simpleType>
+	<complexType name="PinRetrievalRequestType">
+		<sequence>
+			<element name="timestamp" type="dateTime" minOccurs="1"
+				maxOccurs="1" />
+			<element name="TransactionIdentifier" type="vp:TransactionIdentifierType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="CardHolderVerification" type="vp:CardHolderVerificationType"
+				minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<complexType name="PinChangeRequestType">
+		<sequence>
+			<element name="timestamp" type="dateTime" minOccurs="1"
+				maxOccurs="1" />
+			<element name="TransactionIdentifier" type="vp:TransactionIdentifierType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="PinChangeData" type="vp:PinChangeDataType"
+				minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<complexType name="PinRetrievalResponseType">
+		<sequence>
+			<element name="timestamp" type="dateTime" minOccurs="1"
+				maxOccurs="1" />
+			<element name="TransactionIdentifier" type="vp:TransactionIdentifierType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="CardPin" type="vp:CardPinType" minOccurs="1"
+				maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+	<element name="PinRetrievalRequest" type="vp:PinRetrievalRequestType" />
+	<element name="PinRetrievalResponse" type="vp:PinRetrievalResponseType" />
+	<element name="PinChangeRequest" type="vp:PinChangeRequestType" />  
+</schema>

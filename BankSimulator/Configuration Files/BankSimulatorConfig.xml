@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PinAgentConfiguration>
+    
+    <PinRetrievalRequestEnvelopeCookieName>
+        pinretrievalrequest
+    </PinRetrievalRequestEnvelopeCookieName>
+    
+    <PinRetrievalResponseEnvelopeCookieName>
+        pinretrievalresponse
+    </PinRetrievalResponseEnvelopeCookieName>
+
+ <PinChangeRequestEnvelopeCookieName>
+        pinchangerequest
+    </PinChangeRequestEnvelopeCookieName>
+    
+	<PINAuthorityServiceEndPoint>
+		http://172.25.14.194:8080/ViewPINAuthority/services/PinAuthority
+	</PINAuthorityServiceEndPoint>
+
+    <PinAuthoritySigningKeySKI>
+    	050d5fe3b0edb315bf42a33336072e7a9862fe66 
+    </PinAuthoritySigningKeySKI>
+    
+    <PinAuthorityWrappingCertificateSubjectKeyIdentifier>
+        6ad4e4fc26af10d5f80c5a44fcb47974dc133d51  
+    </PinAuthorityWrappingCertificateSubjectKeyIdentifier>
+
+	<PINAuthorityTrustKeyStorePath>
+		D:\develop\BOA\ET_2\pinauth.ks
+	</PINAuthorityTrustKeyStorePath>
+
+
+	<PINAuthorityTrustStorePassword>
+        changeit
+    </PINAuthorityTrustStorePassword>
+
+     
+	<PinAuthorityName>
+    	test.mybank.com
+    </PinAuthorityName>
+	
+	<PinAuthorityCVV>
+    	www.bank.com
+    </PinAuthorityCVV>
+     <!-- The domain to issue cookies for. This must start with a dot (.) -->
+    <PinRetrievalResponseCookieDomain>
+       .mybank.com
+    </PinRetrievalResponseCookieDomain>
+    
+    <PinDisplayPage>
+        https://www.mybank.com:8443/banksimulator/displaypin.jsp
+    </PinDisplayPage>
+
+	 <PinChangePage>
+       changepin.html
+    </PinChangePage>
+    
+    <PinAgentGeneralErrorRedirectionUrl>
+        https://www.mybank.com:8443/banksimulator/generalerror.html
+    </PinAgentGeneralErrorRedirectionUrl>
+    
+    <RequestPostURL>
+    	https://pinagent1.mybank.com:8443/PinAgent/Processor/RequestPin
+    </RequestPostURL>
+    
+    <ViewPinJavascriptURL>
+    	https://pinagent1.mybank.com:8443/PinAgent/Processor/ReceivePin.js
+   	</ViewPinJavascriptURL>
+    
+    <TrustStoreLocation>
+          D:\bankkey.ks
+    </TrustStoreLocation>
+    
+    <TrustStorePassword>
+        changeit
+    </TrustStorePassword>
+
+    <TrustStoreType>
+        JCEKS
+    </TrustStoreType>
+
+    <MaximumFailedAuthenticationAttempts>
+        3
+    </MaximumFailedAuthenticationAttempts>
+    
+    <MaximumReplayOpportunityWindow>
+        60000
+    </MaximumReplayOpportunityWindow>
+    
+    <LoginPage>
+    	login.jsp
+    </LoginPage>
+    
+    <LoginActionLocation>
+    	login
+    </LoginActionLocation>
+    
+    <ConfigurationPage>
+    	config.html
+    </ConfigurationPage>
+    
+    <PinRequestPage>
+    	requestPIN.jsp
+    </PinRequestPage>
+	
+	 <CVVVerifyPage>
+    	verifyCVV.jsp
+    </CVVVerifyPage>
+
+	 <PinChangeRequestPage>
+    	changePIN.jsp
+    </PinChangeRequestPage>
+
+	<selectPinActionLocation>
+    	selectPIN
+    </selectPinActionLocation>
+
+	<ChangePinActionLocation>
+    	changePIN
+    </ChangePinActionLocation>
+
+   <ViewChangeOptionPage>
+	   	ViewChangeOptionPage.jsp
+    </ViewChangeOptionPage>
+
+	<InputPINBlockFormat>
+		1
+	</InputPINBlockFormat>
+
+	<OutputPINBlockFormat>
+		2
+	</OutputPINBlockFormat>
+
+	<CardHolderDataElements>
+		<PANElement>
+			<Name>PAN</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>
+			</EncryptionProperties>
+		</PANElement>
+		<CVVElement>
+			<Name>CVV</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>				
+			</EncryptionProperties>
+		</CVVElement>
+		<ExpiryDateElement>
+			<Name>ExpiryDate</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>			
+			</EncryptionProperties>
+		</ExpiryDateElement>
+		<PINElement>
+			<Name>PIN</Name>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>			
+			</EncryptionProperties>
+		</PINElement>
+	</CardHolderDataElements>
+</PinAgentConfiguration>

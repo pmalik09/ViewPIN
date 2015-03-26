@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<ConnectorThrottleConfiguration>
+    <Connectors>
+        <Connector>
+            <Name>
+                http-8444 
+            </Name>
+            <Throttle>
+                true
+            </Throttle>
+            <Threshold>
+                84
+            </Threshold>
+        </Connector>
+        <Connector>
+            <Name>
+                http-8445
+            </Name>
+            <Throttle>
+                true
+            </Throttle>
+            <Threshold>
+                84
+            </Threshold>
+        </Connector>
+    </Connectors>
+    <ThreadPoolBusyRedirectUrl>
+        https://www.bank.com/busy.html
+    </ThreadPoolBusyRedirectUrl>
+</ConnectorThrottleConfiguration>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project name="Protected Area File Manager" default="jar">
+	<description>
+            Compiles and Jars the Protected Area File Manager
+    </description>
+
+	<property name="srcdir" value="src" />
+	<property name="classpathdir" value="lib" />
+	<property name="compiledir" value="bin" />
+	<property name="jarfilename" value="ProtectedAreaFileManager.jar" />
+	<property name="unjarlocation" value="unjar" />
+
+	<target name="clean" description="Removes binary files">
+		<mkdir dir="${compiledir}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="compile" description="Compiles the Protected Area File Manager" depends="clean">
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on" verbose="off" target="1.5" source="1.5">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<!-- Call to SVN Executable
+		<exec outputproperty="version" executable="svnversion">
+			<arg value="-n" />
+		</exec>
+		-->
+		<mkdir dir="${unjarlocation}" />
+		<unjar dest="${unjarlocation}">
+			<fileset dir=".">
+				<include name="lib/*.jar" />
+			</fileset>
+		</unjar>
+		<copy todir="${unjarlocation}">
+			<fileset dir="${compiledir}">
+			</fileset>
+		</copy>
+		<delete dir="${unjarlocation}/META-INF" />
+		<jar destfile="${jarfilename}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${unjarlocation}" />
+		</jar>
+		<delete dir="${unjarlocation}" />
+	</target>
+
+	<target name="buildcomplete" depends="jar" />
+
+</project>
+

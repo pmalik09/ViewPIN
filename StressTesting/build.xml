@@ -1,0 +1,47 @@
+<project name="StressTesting" default="compile" >
+	
+	<property name="src" value="src" />
+	<property name="build" value="bin" />
+	<property name="lib" value="lib" />
+	<property name="jar" value="StressTesting.jar" />
+	
+	<target name="init" >
+		
+		<mkdir dir="${build}" />
+		
+	</target>
+	
+	<target name="compile" depends="init" >
+		
+		<javac srcdir="${src}" destdir="${build}" debug="off" verbose="off" target="1.5" source="1.5" deprecation="on" >
+		
+			<classpath>
+			    <fileset dir="${lib}">
+			        <include name="**/*.jar"/>
+			    </fileset>
+			</classpath>
+			
+		</javac>
+			
+	</target>
+	
+	<target name="jar" depends="compile" >
+	
+		<jar destfile="${jar}" basedir="${build}" >
+		    <zipgroupfileset dir="${lib}" excludes="bcprov-jdk14-137.jar" />
+			<fileset dir="resources" />
+		</jar>
+	
+	</target>
+	
+	<target name="clean" >
+		<mkdir dir="${build}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${build}" includes="**/*"/>
+		</delete>
+				
+		<delete file="${jar}" />
+		
+	</target>
+	
+</project>

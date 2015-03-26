@@ -1,0 +1,59 @@
+<PinAgent>
+	<Name>pin.bank.com</Name>
+	<SigningCertificate>
+		<SubjectKeyIdentifier>a0922c9145eace52aabc52dbfdffdb14c350a80f</SubjectKeyIdentifier>
+	</SigningCertificate>
+	<SSLCertificate>
+		<SubjectKeyIdentifier>	
+		296c1312a8a172f82e1230cc8a26f68fe808163c
+		</SubjectKeyIdentifier>
+	</SSLCertificate>
+	<SignatureMethodAlgorithm>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</SignatureMethodAlgorithm>
+	<WrappingCertificate>
+		<SubjectKeyIdentifier>296c1312a8a172f82e1230cc8a26f68fe808163c</SubjectKeyIdentifier>
+	</WrappingCertificate>
+	<ErrorRedirectionUrl> https://www.bank.com/banksimulator/error.html 
+	</ErrorRedirectionUrl>
+	<WrappedSessionKeyCookie>
+		<Name>wrappedsessionkey</Name>
+		<Domain>pin.bank.com</Domain>
+		<Path>/</Path>
+	</WrappedSessionKeyCookie>
+	<PinRetrievalRequestCookie>
+		<Name>pinretrievalrequest</Name>
+		<Domain>.bank.com</Domain>
+		<Path>/</Path>
+	</PinRetrievalRequestCookie>
+	<PinChangeRequestCookie>
+		<Name>pinchangerequest</Name>
+		<Domain>.bank.com</Domain>
+		<Path>/</Path>
+	</PinChangeRequestCookie>
+	<PinRetrievalResponseCookie>
+		<Name>pinretrievalresponse</Name>
+		<Domain>.bank.com</Domain>
+		<Path>/</Path>
+	</PinRetrievalResponseCookie>
+	<Port> 8443 </Port>
+	<ReplayWindow>120000</ReplayWindow>
+	<DigestMethodAlgorithm>http://www.w3.org/2001/04/xmldsig-more#sha256</DigestMethodAlgorithm>
+	<PinAuthorities>
+		<PinAuthority>
+			<Name>www.bank.com</Name>
+			<SigningCertificate>
+				<SubjectKeyIdentifier> baa67850f9f25623c9762cf8265bcfe87558616c 
+				</SubjectKeyIdentifier>
+			</SigningCertificate>
+			<WrappingCertificate>
+				<SubjectKeyIdentifier> 0e2f64a72609ca91b5ccb8c8957ae6996dffb8aa 
+				</SubjectKeyIdentifier>
+			</WrappingCertificate>
+			<WrappingPaddingScheme>OAEP</WrappingPaddingScheme>
+			<SessionKey>
+				<AlgorithmName>AES</AlgorithmName>
+				<BitLength>128</BitLength>
+			</SessionKey>
+			<RedirectionUrl>https://www.bank.com/banksimulator/bank</RedirectionUrl>
+		</PinAuthority>
+	</PinAuthorities>
+</PinAgent>

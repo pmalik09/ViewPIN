@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<project name="ProviderAlgorithmSelector" default="compile">
+
+	<property name="src" value="src" />
+	<property name="build" value="bin" />
+	<property name="lib" value="lib" />
+	<property name="jar" value="provideralgorithmselector.jar" />
+
+	<target name="init">
+
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" debug="on" verbose="off" target="1.5" source="1.5">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<!-- Call to SVN Executable
+		<exec outputproperty="version" executable="svnversion">
+			<arg value="-n" />
+		</exec>
+		-->
+		<jar destfile="${jar}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}" />
+			<zipgroupfileset dir="${lib}" excludes="servlet-api.jar,catalina.jar,jmx.jar,commons-logging-1.0.4.jar" />
+		</jar>
+	</target>
+
+	<target name="buildcomplete" depends="jar" />
+
+
+	<target name="clean">
+		<mkdir dir="${build}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*" />
+		</delete>
+
+	</target>
+
+</project>

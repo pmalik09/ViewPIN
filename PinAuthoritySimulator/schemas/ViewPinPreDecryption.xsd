@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:vp="http://www.safenet-inc.com/ns/viewpin"
+	xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+	targetNamespace="http://www.safenet-inc.com/ns/viewpin"
+	elementFormDefault="qualified" finalDefault="" blockDefault=""
+	attributeFormDefault="unqualified">
+	<import namespace="http://www.w3.org/2001/04/xmlenc#"
+		schemaLocation="http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd" />
+	<import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd" />
+	<complexType name="PrimaryAccountNumberType">
+		<sequence>
+			<element ref="xenc:EncryptedData" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="ExpiryDateMonthType">
+		<sequence>
+			<element ref="xenc:EncryptedData" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="ExpiryDateYearType">
+		<sequence>
+			<element ref="xenc:EncryptedData" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="ExpiryDateType">
+		<sequence>
+			<element name="Month" type="vp:ExpiryDateMonthType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="Year" type="vp:ExpiryDateYearType" minOccurs="1"
+				maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="VerificationValueType">
+		<sequence>
+			<element ref="xenc:EncryptedData" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="PinType">
+		<sequence>
+			<element ref="xenc:EncryptedData" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="CardPinType">
+		<sequence>
+			<element name="Pin" type="vp:PinType" minOccurs="1"
+				maxOccurs="1" />
+			<element name="PrimaryAccountNumber" type="vp:PrimaryAccountNumberType"
+				minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="CardHolderVerificationType">
+		<sequence>
+			<element name="VerificationValue" type="vp:VerificationValueType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="ExpiryDate" type="vp:ExpiryDateType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="PrimaryAccountNumber" type="vp:PrimaryAccountNumberType"
+				minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<simpleType name="TransactionIdentifierType">
+		<restriction base="string">
+			<pattern
+				value="[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}" />
+		</restriction>
+	</simpleType>
+	<complexType name="PinRetrievalResponseType">
+		<sequence>
+			<element name="timestamp" type="dateTime" minOccurs="1"
+				maxOccurs="1" />
+			<element name="TransactionIdentifier" type="vp:TransactionIdentifierType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="CardPin" type="vp:CardPinType" minOccurs="1"
+				maxOccurs="unbounded" />
+			<element ref="ds:Signature" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<complexType name="PinRetrievalRequestType">
+		<sequence>
+			<element name="timestamp" type="dateTime" minOccurs="1"
+				maxOccurs="1" />
+			<element name="TransactionIdentifier" type="vp:TransactionIdentifierType"
+				minOccurs="1" maxOccurs="1" />
+			<element name="CardHolderVerification" type="vp:CardHolderVerificationType"
+				minOccurs="1" maxOccurs="unbounded" />
+			<element ref="xenc:EncryptedKey" minOccurs="1" maxOccurs="1" />
+			<element ref="ds:Signature" minOccurs="1" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	<element name="PinRetrievalRequest" type="vp:PinRetrievalRequestType" />
+	<element name="PinRetrievalResponse" type="vp:PinRetrievalResponseType" />
+</schema>

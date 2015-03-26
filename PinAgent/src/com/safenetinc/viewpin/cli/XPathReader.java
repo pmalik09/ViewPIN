@@ -1,0 +1,74 @@
+package com.safenetinc.viewpin.cli; 
+
+import java.io.IOException;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.w3c.dom.*;
+import java.util.ArrayList;
+import java.io.File;
+
+import com.safenetinc.viewpin.agent.Processor;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+
+
+import org.apache.xerces.parsers.DOMParser;
+import org.xml.sax.SAXException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
+/**
+ * Class to fetch the values from the PinAgent Configuration file
+ * using XPath
+ * @author Pratibha Malik
+ */
+public class XPathReader {
+    
+    private String xmlFile;
+    private Document xmlDocument;
+    private XPath xPath;
+   
+    public XPathReader(String xmlFile) {
+        this.xmlFile = xmlFile;
+        initObjects();
+    }
+    
+    private void initObjects(){        
+        try {
+            
+			xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);            
+            xPath =  XPathFactory.newInstance().newXPath();
+
+		} catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (SAXException ex) {
+            ex.printStackTrace();
+        } catch (ParserConfigurationException ex) {
+            ex.printStackTrace();
+        }       
+    }
+    
+    public Object read(String expression, 
+			QName returnType){
+        try {
+			
+            XPathExpression xPathExpression = 
+			xPath.compile(expression);
+
+				
+			return xPathExpression.evaluate(xmlDocument, returnType);
+
+
+        } catch (XPathExpressionException ex) {
+           System.out.println("Could not return value from the file");
+            return null;
+        }
+
+    }
+   
+ }

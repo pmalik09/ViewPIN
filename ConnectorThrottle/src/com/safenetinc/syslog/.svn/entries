@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="492"
+   name=""
+   committed-date="2007-10-08T09:55:23.730636Z"
+   url="https://81.137.141.155/repos/viewpin/ConnectorThrottle/src/com/safenetinc/syslog"
+   last-author="stuart"
+   kind="dir"
+   uuid="c53e108c-2736-0410-bd57-a88133ceb32c"
+   repos="https://81.137.141.155/repos/viewpin"
+   revision="590"/>
+<entry
+   committed-rev="492"
+   name="InvalidContentException.java"
+   text-time="2007-10-24T12:00:48.077379Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="5130371d467dba40b9bc41f465042836"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.733479Z"/>
+<entry
+   committed-rev="492"
+   name="InvalidSeverityException.java"
+   text-time="2007-10-24T12:00:48.030501Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="1f747603a653339d01666773898a108d"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:44.327139Z"/>
+<entry
+   committed-rev="492"
+   name="Utils.java"
+   text-time="2007-10-24T12:00:48.014875Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="e94ed08348ac8d6c111bc1545582d414"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:44.311513Z"/>
+<entry
+   committed-rev="492"
+   name="InvalidTagException.java"
+   text-time="2007-10-24T12:00:48.093005Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="fdd1f04a1fe7ca1788d46197f9334ebc"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.764731Z"/>
+<entry
+   committed-rev="492"
+   name="TimeStamp.java"
+   text-time="2007-10-24T12:00:48.139883Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="d32c98d7833baa9927bc4060cbf423d7"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.780357Z"/>
+<entry
+   committed-rev="492"
+   name="Facility.java"
+   text-time="2007-10-24T12:00:48.186761Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="cac9f164a64eb479719b6a3dcb669811"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.858487Z"/>
+<entry
+   committed-rev="492"
+   name="InvalidHostNameException.java"
+   text-time="2007-10-24T12:00:48.155509Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="aff3ce518d565048c19b85c23870b796"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.811609Z"/>
+<entry
+   committed-rev="492"
+   name="Packet.java"
+   text-time="2007-10-24T12:00:48.202387Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="54e268fb45c1fb5d6a8d46607af19378"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:45.874113Z"/>
+<entry
+   committed-rev="492"
+   name="Severity.java"
+   text-time="2007-10-24T12:00:48.233639Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="6f26a8f8a83f5e7650398d7720e75db7"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.374209Z"/>
+<entry
+   committed-rev="492"
+   name="Tag.java"
+   text-time="2007-10-24T12:00:48.249265Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="ac435e9de10e18de137bb505f1599b92"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.389835Z"/>
+<entry
+   committed-rev="492"
+   name="HostName.java"
+   text-time="2007-10-24T12:00:48.280517Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="32fc164318aea789b14625c140320627"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.421087Z"/>
+<entry
+   committed-rev="492"
+   name="Sender.java"
+   text-time="2007-10-24T12:00:48.311769Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="91c3e8fa475423ecf512792623f74989"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.452339Z"/>
+<entry
+   committed-rev="492"
+   name="Priority.java"
+   text-time="2007-10-24T12:00:48.327395Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="2396258cdbe12c4369833905f16a95b2"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.905493Z"/>
+<entry
+   committed-rev="492"
+   name="Message.java"
+   text-time="2007-10-24T12:00:48.389899Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="21b6c038de7b26d79462b6e18a46e170"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.936745Z"/>
+<entry
+   committed-rev="492"
+   name="Header.java"
+   text-time="2007-10-24T12:00:48.405525Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="d7e028aa26dd470ec69beaa051f3a51a"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.952371Z"/>
+<entry
+   committed-rev="492"
+   name="InvalidFacilityException.java"
+   text-time="2007-10-24T12:00:48.436777Z"
+   committed-date="2007-10-08T09:55:23.730636Z"
+   checksum="1f9dea91a07aa606b564834d34c8e3c2"
+   last-author="stuart"
+   kind="file"
+   prop-time="2007-10-24T12:00:47.967997Z"/>
+</wc-entries>

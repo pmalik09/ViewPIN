@@ -1,0 +1,58 @@
+<project name="Bank Simulator" default="war">
+
+	<property name="wardir" value="war" />
+	<property name="srcdir" value="src" />
+	<property name="extsrcdir" value="externalsource"/>
+	<property name="classpathdir" value="lib" />
+	<property name="compiledir" value="bin" />
+	<property name="warfilename" value="banksimulator.war" />
+	<property name="configdir" value="Configuration Files"/>
+	
+
+	<!--Compiles the bank simulator-->
+	<target name="compile" depends="clean">
+		<javac srcdir="${srcdir}:${extsrcdir}" destdir="${compiledir}" debug="off" verbose="off"
+			target="1.5" source="1.5" deprecation="on" excludes="**/*Test*">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!--Removes all class files and the war file-->
+	<target name="clean">
+		<mkdir dir="${compiledir}"/>
+		<delete file="${warfilename}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<!--Creates war file-->
+	<target name="war" depends="compile">
+		<war destfile="${warfilename}" webxml="WEB-INF/web.xml">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<classes dir="${compiledir}" />
+			<lib dir="${classpathdir}">
+				<exclude name="commons-logging.jar" />
+				<exclude name="servlet-api.jar" />
+			</lib>
+			<fileset dir="." includes="*.html *.jsp *.jpg" />		
+
+			<classes file="${configdir}/log4j.xml" />
+			<classes file="${configdir}/BankSimulatorConfig.xml" />
+			
+			<classes dir="${basedir}">
+				<include name="schemas/**" />
+			</classes>
+
+		</war>
+
+	</target>
+
+	<target name="buildcomplete" depends="war" />
+</project>

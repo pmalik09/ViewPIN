@@ -1,0 +1,338 @@
+<?xml version="1.0"?>
+<project name="PIN Authority" default="compile">
+	<description>
+            description
+    </description>
+	<property name="srcdir" value="src" />
+	<property name="compiledir" value="bin" />
+	<property name="warfilename" value="ViewPINAuthority.war" />
+	<property name="createkeystorename" value="CreateAuthorityKeyStore.jar" />
+	<property name="classpathdir" value="lib" />
+	<property name="CLIclasspathdir" value="CLI_lib" />
+	<property name="configdir" value="config" />
+	<property name="tempdir" value="temp" />
+	<property name="ViewPinAuthorityJarFilename" value="ViewPinAuthority.jar" />
+	<property name="EditPinAuthorityJarFilename" value="EditPinAuthority.jar" />
+	<property name="viewPinAuthorityLoggingConfiguration" value="ViewPinAuthorityLoggingConfiguration.jar" />
+	<property name="editPinAuthorityLoggingConfiguration" value="EditPinAuthorityLoggingConfiguration.jar" />
+	<property name="ViewPINAuthorityLogsJarFilename" value="ViewPINAuthorityLogs.jar" />
+	<property name="DeleteLoggingFileJarFilename" value="DeleteLoggingFile.jar" />
+	<property name="getPinAuthorityVersion" value="PinAuthorityVersion.jar" />
+		
+	<!--Removes all class files and the jar file-->
+	<target name="clean">
+		<mkdir dir="${compiledir}" />
+		<delete file="${warfilename}" />
+		<delete file="${ViewPinAuthorityJarFilename}" />
+		<delete file="${EditPinAuthorityJarFilename}" />
+		<delete file="${viewPinAuthorityLoggingConfiguration}" />
+		<delete file="${editPinAuthorityLoggingConfiguration}" />
+		<delete file="${ViewPINAuthorityLogsJarFilename}" />
+		<delete file="${DeleteLoggingFileJarFilename}" />
+		<delete file="${getPinAuthorityVersion}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="compile" depends="clean" description="Compile the PIN Authority" >
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="off" verbose="off"
+			 target="1.6" source="1.6" deprecation="on"
+			 includes="com/safenetinc/viewpin/authority/**"
+			 excludes="com/safenetinc/viewpin/cli/**">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+		<target name="compileCLI" depends="clean" description="Compile the PIN Authority CLI" >
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="off" verbose="off"
+			 target="1.6" source="1.6" deprecation="on"
+			 includes="com/safenetinc/viewpin/cli/** com/safenetinc/Common.java"
+			 excludes="com/safenetinc/viewpin/authority/**">
+			<classpath>
+				<fileset dir="${CLIclasspathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="war" depends="compile">
+			<war destfile="${warfilename}" webxml="${configdir}/web.xml">
+				<manifest>
+					<attribute name="Version" value="${version}" />
+				</manifest>
+				<classes dir="${compiledir}" />
+				<classes dir="${basedir}">
+					<include name="schemas/**" />
+				</classes>
+				<classes file="${configdir}/log4j.xml" />
+				<classes file="${configdir}/log4j.dtd" />
+				<classes file="${configdir}/PinAuthorityConfiguration.xml" />
+				<classes file="${configdir}/PinAuthorityVersion.txt" />
+				<lib dir="${classpathdir}">
+					<exclude name="commons-logging.jar" />
+				</lib>
+				<webinf file="${configdir}/server-config.wsdd" />
+				<webinf file="${configdir}/deploy.wsdd" />
+				<webinf file="${configdir}/undeploy.wsdd" />
+			</war>
+	</target>
+	
+	<target name="ViewPinAuthorityjar" depends="compileCLI">
+		<jar destfile="${ViewPinAuthorityJarFilename}" duplicate="preserve">
+			<fileset dir="${compiledir}" includes="**/ConfigurationConstants.class **/PinAuthorityConfigurationElements.class
+			**/XPathReader.class **/ReadPinAuthorityConfiguration.class **/ViewPinAuthorityConfiguration.class **/FileHandler.class **/Common.class **/ServerXmlException.class" />
+			<zipgroupfileset dir="${CLIclasspathdir}" />
+		</jar>
+		<!-- Remove the signature from any jar files that have been imported-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${ViewPinAuthorityJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${ViewPinAuthorityJarFilename}" />
+		<jar destfile="${ViewPinAuthorityJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.viewpin.cli.ViewPinAuthorityConfiguration" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<target name="EditPinAuthorityjar" depends="compileCLI">
+		<jar destfile="${EditPinAuthorityJarFilename}" duplicate="preserve">
+			<fileset dir="${compiledir}" includes="**/ConfigurationConstants.class **/PinAuthorityConfigurationElements.class **/XPathReader.class **/ReadPinAuthorityConfiguration.class **/EditPinAuthorityConfiguration.class **/FileHandler.class **/Common.class **/ServerXmlException.class" />
+			<zipgroupfileset dir="${CLIclasspathdir}" />
+		</jar>
+		<!-- Remove the signature from any jar files that have been imported-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${EditPinAuthorityJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${EditPinAuthorityJarFilename}" />
+		<jar destfile="${EditPinAuthorityJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.viewpin.cli.EditPinAuthorityConfiguration" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<!-- build target for creating Edit Logging -->
+	<target name="EditPinAuthorityLoggingJar" depends="clean,compileCLI">
+	<jar destfile="${editPinAuthorityLoggingConfiguration}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${compiledir}">
+				<include name="com/safenetinc/viewpin/cli/logging/EditPinAuthorityLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/LoggingConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/ReadLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+				<include name ="com/safenetinc/Common.class"/>
+			</fileset>
+			<zipgroupfileset dir="${CLIclasspathdir}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${editPinAuthorityLoggingConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${editPinAuthorityLoggingConfiguration}" />
+		<jar destfile="${editPinAuthorityLoggingConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<!-- Build target for creating view logging -->
+	<target name="ViewPinAuthorityLoggingJar" depends="clean,compileCLI">
+	<jar destfile="${viewPinAuthorityLoggingConfiguration}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${compiledir}">
+				<include name="com/safenetinc/viewpin/cli/logging/ViewPinAuthorityLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/LoggingConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/ReadLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+				<include name ="com/safenetinc/Common.class"/>
+				</fileset>
+			<zipgroupfileset dir="${CLIclasspathdir}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${viewPinAuthorityLoggingConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${viewPinAuthorityLoggingConfiguration}" />
+		<jar destfile="${viewPinAuthorityLoggingConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<!-- build target for creating delete Logging File -->
+	<target name="DeleteLoggingFileJar" depends="clean,compileCLI">
+	<jar destfile="${DeleteLoggingFileJarFilename}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${compiledir}">
+				<include name="com/safenetinc/viewpin/cli/logging/DeleteLoggingFile.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+				<include name ="com/safenetinc/Common.class"/>
+				<include name ="com/safenetinc/viewpin/cli/Common.class"/>
+			</fileset>
+			<zipgroupfileset dir="${CLIclasspathdir}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${DeleteLoggingFileJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${DeleteLoggingFileJarFilename}" />
+		<jar destfile="${DeleteLoggingFileJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<!-- build target for creating View Logging File -->
+	<target name="ViewLogFileJar" depends="clean,compileCLI">
+	<jar destfile="${ViewPINAuthorityLogsJarFilename}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${compiledir}">
+				<include name="com/safenetinc/viewpin/cli/logging/ViewPINAuthorityLogs.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+				<include name ="com/safenetinc/Common.class"/>
+				<include name ="com/safenetinc/viewpin/cli/Common.class"/>
+			</fileset>
+			<zipgroupfileset dir="${CLIclasspathdir}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${ViewPINAuthorityLogsJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${ViewPINAuthorityLogsJarFilename}" />
+		<jar destfile="${ViewPINAuthorityLogsJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<!-- build target for creating View PinAuthority Version Info -->
+	<target name="PinAuthorityVersion" depends="clean,compileCLI">
+	<jar destfile="${getPinAuthorityVersion}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${compiledir}">
+				<include name="com/safenetinc/viewpin/cli/PinAuthorityVersion.class" />
+				<include name="com/safenetinc/viewpin/cli/ConfigurationConstants.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+				<include name ="com/safenetinc/viewpin/cli/ReadPinAuthorityVersion.class"/>
+			</fileset>
+			<zipgroupfileset dir="${CLIclasspathdir}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${getPinAuthorityVersion}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${getPinAuthorityVersion}" />
+		<jar destfile="${getPinAuthorityVersion}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<target name="jarCreateAuthorityKeyStore" depends="compile">
+		<jar destfile="${createkeystorename}">
+			<fileset dir="${compiledir}" includes="**/CreateKeyStore.class" />
+			<zipgroupfileset dir="${classpathdir}" />
+		</jar>
+		<!-- Remove the signature from any jar files that have been imported-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${createkeystorename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${createkeystorename}" />
+		<jar destfile="${createkeystorename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.viewpin.simulator.authority.CreateKeyStore" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<target name="buildcomplete" depends="war,ViewPinAuthorityjar,EditPinAuthorityjar,ViewPinAuthorityLoggingJar,ViewLogFileJar,EditPinAuthorityLoggingJar,PinAuthorityVersion, DeleteLoggingFileJar" />
+
+</project>

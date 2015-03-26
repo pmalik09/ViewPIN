@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="ViewPIN Test Client" default="jar">
+	<description>
+            Test client for the ViewPIN system
+    </description>
+
+	<property name="compiledir" value="bin" />
+	<property name="srcdir" value="src" />
+	<property name="classpathdir" value="lib" />
+	<property name="jarfilename" value="viewpintestclient.jar"/>
+
+	<target name="clean" description="Removes binary files">
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="compile" description="Compiles the ViewPIN test client system" depends="clean">
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on" verbose="off" target="1.5" source="1.5">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${jarfilename}">
+			<fileset dir="${compiledir}" />
+			<zipgroupfileset dir="${classpathdir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.viewpin.testclient.ViewPINTestClient" />
+			</manifest>
+		</jar>
+	</target>
+
+
+</project>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PinAuthorityConfiguration>
+
+    <PinAuthoritySigningKeySKI>
+    	dc1a5c86d175fa1c8cf2495ab42d923dec8282c9
+    </PinAuthoritySigningKeySKI>
+    
+    <PinAuthorityWrappingCertificateSubjectKeyIdentifier>
+        e0159bc92ce50ff1bd9bb4cc3aa084ad36433bb9 
+    </PinAuthorityWrappingCertificateSubjectKeyIdentifier>
+
+    <TrustStoreLocation>
+        D:\Program Files\Apache Software Foundation\Tomcat 5.5\webapps\pinauthorityconfiguration
+    </TrustStoreLocation>
+    
+    <TrustStorePassword>
+        password
+    </TrustStorePassword>
+    
+    <MaximumFailedAuthenticationAttempts>
+        3
+    </MaximumFailedAuthenticationAttempts>
+    
+    <MaximumReplayOpportunityWindow>
+        60000
+    </MaximumReplayOpportunityWindow>
+    
+   <CardHolderDataElements>
+		<PANElement>
+			<Name>PAN</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>
+			</EncryptionProperties>
+		</PANElement>
+		<CVVElement>
+			<Name>CVV</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>				
+			</EncryptionProperties>
+		</CVVElement>
+		<ExpiryDateElement>
+			<Name>ExpiryDate</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>			
+			</EncryptionProperties>
+		</ExpiryDateElement>
+		<PINElement>
+			<Name>PIN</Name>
+			<Encrypted>true</Encrypted>
+			<EncryptionProperties>
+				<KeyIdentifier>MyDesKeyM</KeyIdentifier>
+				<KeyType>DES</KeyType>
+				<Transformation>DES/CBC/PKCS5Padding</Transformation>			
+			</EncryptionProperties>
+		</PINElement>
+	</CardHolderDataElements>
+	
+</PinAuthorityConfiguration>

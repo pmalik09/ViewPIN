@@ -1,0 +1,465 @@
+<?xml version="1.0"?>
+<project name="PinAgent" default="compile">
+	<property name="src" value="src" />
+	<property name="clisrc" value="/src/com/safenetinc/viewpin/cli" />
+	<property name="config" value="configuration" />
+	<property name="jspdir" value="${src}/jsp" />
+	<property name="lib" value="lib" />
+	<property name="CLI_lib" value="CLI_lib" />
+	<property name="build" value="bin" />
+	<property name="war" value="PinAgent.war" />
+	<property name="zipfile" value="PinAgent.zip" />
+	<property name="viewPinAgentConfiguration" value="ViewPinAgentConfiguration.jar" />
+	<property name="editPinAgentConfiguration" value="EditPinAgentConfiguration.jar" />
+	<property name="viewLoggingConfiguration" value="ViewLoggingConfiguration.jar" />
+	<property name="editLoggingConfiguration" value="EditLoggingConfiguration.jar" />
+	<property name="ViewPINAgentLogsJarFilename" value="ViewPINAgentLogs.jar" />
+	<property name="DeleteLoggingFileJarFilename" value="DeleteLogFile.jar" />
+	<property name="backup" value="BackUp.jar" />
+	<property name="restore" value="Restore.jar" />
+	<property name="obfuscated" value="obfuscated" />
+	<property name="getPinAgentVersion" value="PinAgentVersion.jar" />
+	
+	<property name="constantsfile"
+		value="src/com/safenetinc/viewpin/agent/ViewPinConstants.java" />
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+	
+	<path id="compile.classpath"> 
+		<fileset dir="${lib}"> 
+			<include name="*.jar"/> 
+		</fileset> 
+		
+	</path>
+
+	<target name="compile" depends="init,clean">
+		<!--
+			Constants file - replace the VERSION string with the global version
+		-->
+		<javac srcdir="${src}" destdir="${build}" debug="off" verbose="off"
+			target="1.6" source="1.6" deprecation="on"
+			includes="com/safenetinc/viewpin/agent/**,com/safenetinc/viewpin/ds/**,com/safenetinc/viewpin/agent/common/**"
+			excludes="com/safenetinc/viewpin/cli/**, com/safenetinc/viewpin/backup/**,com/safenetinc/viewpin/restore/**"
+			>
+			
+			<classpath refid="compile.classpath"/> 
+
+		</javac>
+		<!--revert the modified constants file-->
+	</target>
+	
+	
+	<target name="compileCLI" depends="init,clean">
+			<!--
+				Constants file - replace the VERSION string with the global version
+			-->
+			<javac srcdir="${src}" destdir="${build}" debug="off" verbose="off"
+				target="1.6" source="1.6" deprecation="on"
+				excludes="com/safenetinc/viewpin/agent/**,com/safenetinc/viewpin/ds/**,com/safenetinc/viewpin/agent/common/** com/safenetinc/Common.java"
+				includes="com/safenetinc/viewpin/cli/**, com/safenetinc/viewpin/backup/**,com/safenetinc/viewpin/restore/**"
+				>
+				<classpath>
+					<fileset dir="${CLI_lib}">
+						<include name="**/*.jar" />
+					</fileset>
+				</classpath>
+			</javac>
+			<!--revert the modified constants file-->
+		</target>
+	
+	<target name="obfuscate" depends="compile">
+		<taskdef resource="proguard/ant/task.properties" classpath="proguard.jar" />
+		<fileset dir="${lib}" id="libjars">
+			<include name="**/*.jar" />
+		</fileset>
+		<proguard  shrink="true" optimize="true" obfuscate="false"
+			preverify="false" verbose="false" printusage="false">
+			<libraryjar
+				location="C:\Program Files\Java\jre7\lib\rt.jar" />
+				
+			<libraryjar refid="libjars" />
+			<injar location="${build}" />
+			<outjar name="${obfuscated}" />
+			<dontwarn name="**"/>
+			<keep access="public" type="class"
+				name="com.safenetinc.viewpin.agent.Processor">
+				<method access="public" name="*" />
+			</keep>
+			<keep access="public" type="class"
+				name="com.safenetinc.viewpin.agent.otp.PadEncryptedPin">
+				<method access="public" name="*" />
+			</keep>
+			<keep access="public" type="class"
+				name="com.safenetinc.viewpin.agent.otp.PadEncryptedPins">
+				<method access="public" name="*" />
+			</keep>
+		</proguard>
+	</target>
+
+	
+	
+	<target name="war" depends="obfuscate">
+		<war destfile="${war}" webxml="web.xml">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<classes dir="${obfuscated}" />
+			<classes dir="${basedir}">
+				<include name="schemas/**" />
+				<include name="configuration/**" />
+				</classes>
+			<classes file="log4j.xml" />
+			<classes file="log4j.dtd" />
+			<lib dir="${lib}">
+				<exclude name="commons-logging.jar" />
+				<exclude name="LunaProvider.jar" />				
+				<exclude name="servlet-api.jar" />
+			</lib>
+			<fileset file="${jspdir}/showPin.jsp" />
+			</war>
+		<delete dir="${obfuscated}" />
+		<zip destfile="PinAgent.zip" basedir="." includes="PinAgent.war" />
+	</target>
+	<target name="clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*" />
+		</delete>
+		<delete file="${war}" />
+		<delete dir="${obfuscated}" />
+		<delete file="${viewPinAgentConfiguration}" />
+		<delete file="${editPinAgentConfiguration}" />
+		<delete file="${viewLoggingConfiguration}" />
+		<delete file="${editLoggingConfiguration}" />
+		<delete file="${ViewPINAgentLogsJarFilename}" />
+		<delete file="${DeleteLoggingFileJarFilename}" />
+		<delete file="${backup}" />
+		<delete file="${restore}" />
+		<delete file="${getPinAgentVersion}" />
+			
+	</target>
+	
+	<target name="ViewPinAgentConfiguration.jar" depends="clean,init,compileCLI">
+	<jar destfile="${viewPinAgentConfiguration}">
+		<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/ViewPinAgentConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/PinAgentConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/ReadPinAgentConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/XPathReader.class" />
+				<include name="com/safenetinc/viewpin/cli/PinAuthority.class" />
+				<include name="com/safenetinc/Common.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${viewPinAgentConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${viewPinAgentConfiguration}" />
+		<jar destfile="${viewPinAgentConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<target name="EditPinAgentConfiguration.jar" depends="clean,init,compileCLI">
+	<jar destfile="${editPinAgentConfiguration}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/EditPinAgentConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/PinAgentConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/ReadPinAgentConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/XPathReader.class" />
+				<include name="com/safenetinc/viewpin/cli/PinAuthority.class" />
+				<include name="com/safenetinc/Common.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${editPinAgentConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${editPinAgentConfiguration}" />
+		<jar destfile="${editPinAgentConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	<target name="ViewLoggingConfiguration.jar" depends="clean,init,compileCLI">
+	<jar destfile="${viewLoggingConfiguration}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/logging/ViewLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/LoggingConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/ReadLoggingConfiguration.class" />
+				<include name="com/safenetinc/Common.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+							
+				</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${viewLoggingConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${viewLoggingConfiguration}" />
+		<jar destfile="${viewLoggingConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<target name="EditoggingConfiguration.jar" depends="clean,init,compileCLI">
+	<jar destfile="${editLoggingConfiguration}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/logging/EditLoggingConfiguration.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/LoggingConfigurationElements.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/logging/ReadLoggingConfiguration.class" />
+				<include name="com/safenetinc/Common.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+					
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${editLoggingConfiguration}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${editLoggingConfiguration}" />
+		<jar destfile="${editLoggingConfiguration}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+	<!-- Target to build PinAgent Version Executable -->
+	<target name="PinAgentVersion" depends="clean,init,compileCLI">
+	<jar destfile="${getPinAgentVersion}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/PinAgentVersion.class" />
+				<include name="com/safenetinc/viewpin/cli/ReadPinAgentVersion.class" />
+				<include name="com/safenetinc/viewpin/cli/Constants.class" />
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+					
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${getPinAgentVersion}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${getPinAgentVersion}" />
+		<jar destfile="${getPinAgentVersion}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	
+		<target name="BackUp.jar" depends="clean,init,compileCLI">
+			<jar destfile="${backup}">
+					<manifest>
+						<attribute name="Version" value="${version}" />
+					</manifest>
+					<fileset dir="${build}">
+						<include name="com/safenetinc/viewpin/backup/BackUp.class" />
+						<include name="com/safenetinc/viewpin/backup/Constants.class" />
+						<include name="com/safenetinc/viewpin/backup/Utils.class" />
+						<include name="com/safenetinc/Common.class" />
+						<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+						<include name="com/safenetinc/viewpin/backup/exception/ServerXmlException.class" />
+						<include name="com/safenetinc/viewpin/backup/ServerXmlHandler.class" />
+						
+					</fileset>
+				<zipgroupfileset dir ="${CLI_lib}"/>
+				
+				</jar>
+				<mkdir dir="${tempdir}" />
+				<unjar src="${backup}" dest="${tempdir}">
+					<patternset>
+						<include name="**" />
+						<exclude name="META-INF/*.SF" />
+						<exclude name="META-INF/*.DSA" />
+						<exclude name="META-INF/*.RSA" />
+					</patternset>
+				</unjar>
+				<delete file="${backup}" />
+				<jar destfile="${backup}">
+					<fileset dir="${tempdir}" />
+					<manifest>
+						<attribute name="Version" value="${version}" />
+					</manifest>
+				</jar>
+				<delete dir="${tempdir}" />
+			</target>
+	
+	<target name="Restore.jar" depends="clean,init,compileCLI,war">
+				<jar destfile="${restore}">
+						<manifest>
+							<attribute name="Version" value="${version}" />
+						</manifest>
+						<fileset dir="${build}">
+							<include name="com/safenetinc/viewpin/restore/Restore.class" />
+							<include name="com/safenetinc/viewpin/restore/Constants.class" />
+							<include name="com/safenetinc/viewpin/restore/AddVirtualHost.class" />
+							<include name="com/safenetinc/viewpin/restore/DirectoryHandler.class" />
+							<include name="com/safenetinc/viewpin/restore/FileCopy.class" />
+							<include name="com/safenetinc/viewpin/restore/FileDelete.class" />
+							<include name="com/safenetinc/viewpin/restore/XPathReader.class" />
+							<include name="com/safenetinc/viewpin/backup/Utils.class" />
+							<include name="com/safenetinc/Common.class" />
+							<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+							<include name="com/safenetinc/viewpin/backup/exception/ServerXmlException.class" />
+							<include name="com/safenetinc/viewpin/backup/ServerXmlHandler.class" />
+							
+						</fileset>
+					<fileset dir=".">
+						<include name="PinAgent.war"/>
+							</fileset>
+											
+					<zipgroupfileset dir ="${CLI_lib}"/>
+					
+					</jar>
+					<mkdir dir="${tempdir}" />
+					<unjar src="${restore}" dest="${tempdir}">
+						<patternset>
+							<include name="**" />
+							<exclude name="META-INF/*.SF" />
+							<exclude name="META-INF/*.DSA" />
+							<exclude name="META-INF/*.RSA" />
+						</patternset>
+					</unjar>
+					<delete file="${restore}" />
+					<jar destfile="${restore}">
+						<fileset dir="${tempdir}" />
+						<manifest>
+							<attribute name="Version" value="${version}" />
+						</manifest>
+					</jar>
+					<delete dir="${tempdir}" />
+				</target>
+	
+	<target name="ViewLogFileJar.jar" depends="clean,init,compileCLI">
+	<jar destfile="${ViewPINAgentLogsJarFilename}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/logging/ViewPINAgentLogs.class" />				
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />				
+				<include name="com/safenetinc/Common.class" />	
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${ViewPINAgentLogsJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${ViewPINAgentLogsJarFilename}" />
+		<jar destfile="${ViewPINAgentLogsJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<target name="DeleteLoggingFileJar" depends="clean,init,compileCLI">
+	<jar destfile="${DeleteLoggingFileJarFilename}">
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			<fileset dir="${build}">
+				<include name="com/safenetinc/viewpin/cli/logging/DeleteLoggingFile.class" />				
+				<include name="com/safenetinc/viewpin/cli/logging/Constants.class" />				
+				<include name="com/safenetinc/Common.class" />		
+				<include name="com/safenetinc/viewpin/cli/FileHandler.class" />
+			</fileset>
+			<zipgroupfileset dir="${CLI_lib}"  />
+		</jar>
+		<mkdir dir="${tempdir}" />
+		<unjar src="${DeleteLoggingFileJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${DeleteLoggingFileJarFilename}" />
+		<jar destfile="${DeleteLoggingFileJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<target name="buildcomplete" depends="war,ViewPinAgentConfiguration.jar,EditPinAgentConfiguration.jar,ViewLoggingConfiguration.jar,EditoggingConfiguration.jar,BackUp.jar,Restore.jar,ViewLogFileJar.jar,DeleteLoggingFileJar,PinAgentVersion" />
+</project>

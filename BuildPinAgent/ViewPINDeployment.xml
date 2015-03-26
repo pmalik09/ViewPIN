@@ -1,0 +1,670 @@
+<?xml version="1.0"?>
+<project name="Deploy PinAgent" default="deployPinAgentFiles">
+	<description>
+        Buildfile to create a PinAgent from a freshly initialised LunaSP.
+		This ant buildfile is provided for convenience with the aim of simplifying the processes
+		of creating and configuring a LunaSP hosting the ViewPIN application
+    </description>
+
+	<!--Define the query task we will be using to receive user input.
+	Unlike normal ant, this allows password to be entered in obscured form-->
+	<taskdef name="query" classname="com.jera.anttasks.Query" classpath="JeraAntTasks.jar" />
+
+	<!--Define the properties file for this build-->
+	<property file="PinAgentBuild.properties" />
+
+
+	<target name="-welcome">
+		<echo>******************************************************************</echo>
+		<echo>Safenet PinAgent automatic deployment (c) Safenet inc. 2004-2007</echo>
+		<echo>Prior to running this script please ensure the SSH server host key</echo>
+		<echo>for the LunaSP is cached by the plink program. In order to achieve</echo>
+		<echo>this run the following command:</echo>
+		<echo>plink admin@[LunaSP IP Address] "net show"</echo>
+		<echo>ensure you answer yes when prompted to "Store key in cache"</echo>
+		<echo>******************************************************************</echo>
+	</target>
+
+	<!--
+	Target to request the IP address or DNS name of the LunaSP
+	-->
+	<target name="requestLunaIPAddress" depends="-welcome">
+		<echo>Please enter the IP Address or DNS name of the Luna SP</echo>
+		<query message="address/name:" name="address" />
+	</target>
+
+	<!-- 
+	Target to request the administrator password for the LunaSP
+	-->
+	<target name="requestLunaPassword">
+		<echo>Please enter the administrator password for the Luna SP</echo>
+		<query message="LunaSP Administrator password:" name="password" password="true" />
+	</target>
+
+	<!--
+	Task to reinitialise a LunaSP, at present this task is non functional as the LunaSP requires
+	interactive input to this command
+	-->
+	<target name="-resetLunaSP" depends="-welcome,requestLunaIPAddress,requestLunaPassword" description="Resets a LunaSP to factory state">
+
+		<echo>Initialising the LunaSP ${address} with JDK 1.5.0. 
+			Please approve the operation with the blue key when prompted</echo>
+		<exec executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spconfig lunaSP init -jvm jdk150" />
+		</exec>
+	</target>
+
+	<!--
+	Target to upload the ViewPIN application files to a LunaSP
+	-->
+	<target name="-uploadPinAgentFiles" depends="requestLunaIPAddress,requestLunaPassword">
+		<echo>Uploading files required to create PinAgent. This may take some time</echo>
+		<echo>Uploading ${addVirtualHostFile}</echo>
+		<exec dir="." executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${addVirtualHostFile}" />
+			<arg value="${lunaSPUsername}@${address}:${addVirtualHostFile}" />
+		</exec>
+		<echo>Uploading ${deleteVirtualHostFile}</echo>
+		<exec dir="." executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${deleteVirtualHostFile}" />
+			<arg value="${lunaSPUsername}@${address}:${deleteVirtualHostFile}" />
+		</exec>
+		<echo>Uploading ${listVirtualHostsFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${listVirtualHostsFile}" />
+			<arg value="${lunaSPUsername}@${address}:${listVirtualHostsFile}" />
+		</exec>
+		<echo>Uploading ${editPinAgentConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${editPinAgentConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${editPinAgentConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${viewPinAgentConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${viewPinAgentConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${viewPinAgentConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${editPinAgentLoggingConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${editPinAgentLoggingConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${editPinAgentLoggingConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${viewPinAgentLoggingConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${viewPinAgentLoggingConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${viewPinAgentLoggingConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${backupPinAgentConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${backupPinAgentConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${backupPinAgentConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${restorePinAgentConfigurationFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${restorePinAgentConfigurationFile}" />
+			<arg value="${lunaSPUsername}@${address}:${restorePinAgentConfigurationFile}" />
+		</exec>
+		<echo>Uploading ${importCertificateFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${importCertificateFile}" />
+			<arg value="${lunaSPUsername}@${address}:${importCertificateFile}" />
+		</exec>
+		<echo>Uploading ${exportCertificatesFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${exportCertificatesFile}" />
+			<arg value="${lunaSPUsername}@${address}:${exportCertificatesFile}" />
+		</exec>
+		<echo>Uploading ${generateCertificateRequestFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${generateCertificateRequestFile}" />
+			<arg value="${lunaSPUsername}@${address}:${generateCertificateRequestFile}" />
+		</exec>
+		<echo>Uploading ${protectedAreaFileManagerFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${protectedAreaFileManagerFile}" />
+			<arg value="${lunaSPUsername}@${address}:${protectedAreaFileManagerFile}" />
+		</exec>
+		<echo>Uploading ${deleteKeyStoreEntryFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${deleteKeyStoreEntryFile}" />
+			<arg value="${lunaSPUsername}@${address}:${deleteKeyStoreEntryFile}" />
+		</exec>
+		<echo>Uploading ${listKeyStoreEntriesFile}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${listKeyStoreEntriesFile}" />
+			<arg value="${lunaSPUsername}@${address}:${listKeyStoreEntriesFile}" />
+		</exec>
+		<echo>Uploading ${resourceSentryName}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${resourceSentryFile}" />
+			<arg value="${lunaSPUsername}@${address}:${resourceSentryFile}" />
+		</exec>
+		<echo>Uploading ${providerAlgorithSelectorName}</echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${binariesDir}\${providerAlgorithmSelectorFile}" />
+			<arg value="${lunaSPUsername}@${address}:${providerAlgorithmSelectorFile}" />
+		</exec>
+	</target>
+
+	<!--
+	Target to deploy the required files for the ViewPIN application to a LunaSP
+	-->
+	<target name="deployPinAgentFiles" depends="-uploadPinAgentFiles">
+		<echo>Deploying PinAgent files to LunaSP</echo>
+		<!--Deploy the add virtual host command-->
+		<echo>Deploying ${addVirtualHostName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${addVirtualHostName} -file ${addVirtualHostFile} -startClass ${addVirtualHostStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the delete virtual host command-->
+		<echo>Deploying ${deleteVirtualHostName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${deleteVirtualHostName} -file ${deleteVirtualHostFile} -startClass ${deleteVirtualHostStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the list virtual hosts command-->
+		<echo>Deploying ${listVirtualHostsName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${listVirtualHostsName} -file ${listVirtualHostsFile} -startClass ${listVirtualHostStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the edit PinAgent Logging Configuration File command-->
+		<echo>Deploying ${editPinAgentLoggingConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${editPinAgentLoggingConfigurationName} -file ${editPinAgentLoggingConfigurationFile} -startClass ${editPinAgentLoggingConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the view PinAgent Logging Configuration File command-->
+		<echo>Deploying ${viewPinAgentLoggingConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${viewPinAgentLoggingConfigurationName} -file $(viewPinAgentLoggingConfigurationFile} -startClass ${viewPinAgentLoggingConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the edit PinAgent Configuration File command-->
+		<echo>Deploying ${editPinAgentConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${editPinAgentConfigurationName} -file ${editPinAgentConfigurationFile} -startClass ${editPinAgentConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the view PinAgent Configuration File command-->
+		<echo>Deploying ${viewPinAgentConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${viewPinAgentConfigurationName} -file ${viewPinAgentConfigurationFile} -startClass ${viewPinAgentConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the backup PinAgent Configuration File command-->
+		<echo>Deploying ${backupPinAgentConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${backupPinAgentConfigurationName} -file ${backupPinAgentConfigurationFile} -startClass ${backupPinAgentConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the restore PinAgent Configuration File command-->
+		<echo>Deploying ${restorePinAgentConfigurationName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${restorePinAgentConfigurationName} -file ${restorePinAgentConfigurationFile} -startClass ${restorePinAgentConfigurationStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the import certificates command-->
+		<echo>Deploying ${importCertificateName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${importCertificateName} -file ${importCertificateFile} -startClass ${importCertificateStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the export certificates command-->
+		<echo>Deploying ${exportCertificatesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${exportCertificatesName} -file ${exportCertificatesFile} -startClass ${exportCertificatesStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the generate certificate request command-->
+		<echo>Deploying ${exportCertificatesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${generateCertificateRequestName} -file ${generateCertificateRequestFile} -startClass ${generateCertificateRequestStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the protected area file manager command-->
+		<echo>Deploying ${protectedAreaFileManagerName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${protectedAreaFileManagerName} -file ${protectedAreaFileManagerFile} -startClass ${protectedAreaFileManagerStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the delete key store entry command-->
+		<echo>Deploying ${deleteKeyStoreEntriesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${deleteKeyStoreEntriesName} -file ${deleteKeyStoreEntryFile} -startClass ${deleteKeyStoreEntryStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the list key store entry command-->
+		<echo>Deploying ${listKeyStoreEntriesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin deploy application -name ${listKeyStoreEntriesName} -file ${listKeyStoreEntriesFile} -startClass ${listKeyStoreEntriesStartClass} -autoStart false" />
+		</exec>
+		<!--Deploy the Resource Sentry-->
+		<echo>Deploying ${resourceSentryName}</echo>
+
+		<!--Now zip and upload the Resource Sentry configuration-->
+		<antcall target="-uploadResourceSentryConfiguration" />
+		<!--Now deploy the actual Resource Sentry-->
+		<echo>Adding ResourceSentry to web stack. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server valve add -className ${resourceSentryStartClass} -file ${resourceSentryFile}" />
+		</exec>
+
+		<!--Deploy the provider algorithm selector-->
+		<echo>Deploying ${providerAlgorithSelectorName}</echo>
+		<!--Zip and upload the configuration-->
+		<antcall target="-uploadProviderAlgorithmSelectorConfiguration" />
+		<!--Now deploy the actual provider algorithm selector-->
+		<echo>Adding ProviderAlgorithmSelector to web stack. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server valve add -className ${providerAlgorithmSelectorStartClass} -file ${providerAlgorithmSelectorFile}" />
+		</exec>
+
+		<!--Open the outbound port for syslog-->
+		<echo>Adding outbound port for Syslog. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server port outbound -port ${syslogPort}" />
+		</exec>
+		<echo>Restarting Tomcat</echo>
+		<exec dir="." executable="plink" spawn="true">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin restart" />
+		</exec>
+	</target>
+	
+	<!--
+	Target to export the certificates installed at the LunaSP box
+	-->
+	<target name="exportCertificate" depends="requestLunaIPAddress,requestLunaPassword" >
+		<echo>Please enter the name(object name/alias name) of Certificate to be exported</echo>
+		<query message="Certificate to be exported" name="certificateName" />
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp ExportCertificates" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files export -file ${certificateName} " />
+		</exec>
+		<echo>Exporting ${certificateName} </echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${lunaSPUsername}@{address}:${certificateName}" />
+			<arg value="${certificateName}" />
+		</exec>
+	</target>
+
+	<!--
+	Target to import the certificates installed at the LunaSP box
+	-->
+	<target name="importCertificate" depends="requestLunaIPAddress,requestLunaPassword">
+		
+		<echo>Please enter Directory path of where Certificate File exists</echo>
+		<query message="Certificate File Directory path " name="certificateFilePath" />
+					
+		<echo>Please enter the name of Certificate File</echo>
+		<query message="Certificate Name to be imported" name="certificateName" />
+				
+		<zip destfile="cert.zip" basedir="${certificateFilePath}" includes="${certificateName}" />
+		
+		<echo>Uploading cert.zip </echo>
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="cert.zip" />
+			<arg value="${lunaSPUsername}@${address}:cert.zip " />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files import -file cert.zip " />
+		</exec>
+		<echo>Importing ${certificateName} </echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp importcertificate -file ${certificateName} " />
+		</exec>
+		<delete file="cert.zip" />
+	</target>
+
+	
+	
+	<!--
+	Target to zip, upload and import the configuration for the Resource Sentry
+	-->
+	<target name="-uploadResourceSentryConfiguration">
+		<zip destfile="${resourceSentryLoggingConfigurationZipFile}" basedir="." includes="${configurationDir}/${resourceSentryLoggingConfigurationFile}" />
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${resourceSentryLoggingConfigurationZipFile}" />
+			<arg value="${lunaSPUsername}@${address}:${resourceSentryLoggingConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files import -file ${resourceSentryLoggingConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp ${protectedAreaFileManagerName} --import ${resourceSentryLoggingConfigurationFile}" />
+		</exec>
+		<delete file="${resourceSentryLoggingConfigurationZipFile}" />
+		<zip destfile="${resourceSentryConfigurationZipFile}" basedir="." includes="${configurationDir}/${resourceSentryConfigurationFile}" />
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${resourceSentryConfigurationZipFile}" />
+			<arg value="${lunaSPUsername}@${address}:${resourceSentryConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files import -file ${resourceSentryConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp ${protectedAreaFileManagerName} --import ${resourceSentryConfigurationFile}" />
+		</exec>
+		<delete file="${resourceSentryConfigurationZipFile}" />
+	</target>
+
+	<!--
+		Target to zip, upload and import the configuration for the Provider Algorithm Selector
+		-->
+	<target name="-uploadProviderAlgorithmSelectorConfiguration">
+		<zip destfile="${providerAlgorithmSelectorLoggingConfigurationZipFile}" basedir="." includes="${configurationDir}/${providerAlgorithmSelectorLoggingConfigurationFile}" />
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${providerAlgorithmSelectorLoggingConfigurationZipFile}" />
+			<arg value="${lunaSPUsername}@${address}:${providerAlgorithmSelectorLoggingConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files import -file ${providerAlgorithmSelectorLoggingConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp ${protectedAreaFileManagerName} --import ${providerAlgorithmSelectorLoggingConfigurationFile}" />
+		</exec>
+		<delete file="${providerAlgorithmSelectorLoggingConfigurationZipFile}" />
+		<zip destfile="${providerAlgorithmSelectorConfigurationZipFile}" basedir="." includes="${configurationDir}/${providerAlgorithmSelectorConfigurationFile}" />
+		<exec executable="ctp">
+			<arg line="-pw ${password}" />
+			<arg line="-P ${sshPort}" />
+			<arg value="${providerAlgorithmSelectorConfigurationZipFile}" />
+			<arg value="${lunaSPUsername}@${address}:${providerAlgorithmSelectorConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin files import -file ${providerAlgorithmSelectorConfigurationZipFile}" />
+		</exec>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="sp ${protectedAreaFileManagerName} --import ${providerAlgorithmSelectorConfigurationFile}" />
+		</exec>
+		<delete file="${providerAlgorithmSelectorConfigurationZipFile}" />
+	</target>
+
+	<!--
+	Target to remove the applications and files associated with the ViewPIN product from a LunaSP
+	-->
+	<target name="undeployPinAgentFiles" depends="requestLunaIPAddress,requestLunaPassword">
+		<!--TODO empty usr-xfiles and usr-files here-->
+		
+		<!--Undeploy the add virtual host command-->
+		<echo>Undeploying ${addVirtualHostName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${addVirtualHostName}" />
+		</exec>
+		<!--Undeploy the delete virtual host command-->
+		<echo>Undeploying ${deleteVirtualHostName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${deleteVirtualHostName}" />
+		</exec>
+		<!--Undeploy the list virtual hosts command-->
+		<echo>Undeploying ${listVirtualHostsName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${listVirtualHostsName}" />
+		</exec>
+		<!--Undeploy the import certificate command-->
+		<echo>Undeploying ${importCertificateName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${importCertificateName}" />
+		</exec>
+		<!--Undeploy the export certificates command-->
+		<echo>Undeploying ${exportCertificatesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${exportCertificatesName}" />
+		</exec>
+		<!--Undeploy the generate certificate request command-->
+		<echo>Undeploying ${generateCertificateRequestName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${generateCertificateRequestName}" />
+		</exec>
+		<!--Undeploy the protected area file manager command-->
+		<echo>Undeploying ${protectedAreaFileManagerName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${protectedAreaFileManagerName}" />
+		</exec>
+		<!--Undeploy the delete key store entry command-->
+		<echo>Undeploying ${deleteKeyStoreEntriesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${deleteKeyStoreEntriesName}" />
+		</exec>
+		<!--Undeploy the list key store entries command-->
+		<echo>Undeploying ${listKeyStoreEntriesName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${listKeyStoreEntriesName}" />
+		</exec>
+		<!--Undeploy the bcprov library-->
+		<echo>Undeploying ${bcprovName}</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="spadmin undeploy -name ${bcprovName}" />
+		</exec>
+		<!--Undeploy the Resource Sentry-->
+		<echo>Removing ${resourceSentryName} from web stack. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server valve remove -className ${resourceSentryStartClass}" />
+		</exec>
+		<!--Undeploy the Provider Algorithm Selector-->
+		<echo>Removing ${providerAlgorithSelectorName} from web stack. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server valve remove -className ${providerAlgorithmSelectorStartClass}" />
+		</exec>
+		<!--Close the outbound port for syslog-->
+		<echo>Closing outbound port for Syslog. This is a blue key operation, please approve using the blue key and PIN</echo>
+		<exec dir="." executable="plink">
+			<arg value="-batch" />
+			<arg line="-P ${sshPort}" />
+			<arg line="-pw ${password}" />
+			<arg value="${lunaSPUsername}@${address}" />
+			<arg value="websvc server port remove -port ${syslogPort}" />
+		</exec>
+	</target>
+	
+
+</project>

@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<project name="VirtualHosts" default="compile">
+	<description>
+            Compile and jar the luna virtual hosts setup code
+    </description>
+	<property name="srcdir" value="src" />
+	<property name="classpathdir" value="lib" />
+	<property name="compiledir" value="bin" />
+	<property name="testdir" value="test" />
+	<property name="tempdir" value="temp" />
+
+	<property name="addVirtualHostJarFilename" value="AddVirtualHost.jar" />
+	<property name="addVirtualHostProGuardJarFilename" value="AddVirtualHostProGuard.jar" />
+	<property name="listVirtualHostJarFilename" value="ListVirtualHost.jar" />
+	<property name="PinAgentWar" value="PinAgent.war" />
+	<property name="agentconfigxml" value="agentconfiguration.xml" />
+	<property name="logconfigxml" value="pinagent-log4j.xml" />
+	<property name="PinAgentVersion" value="PinAgentVersion.txt" />
+	<property name="listVirtualHostProGuardJarFilename" value="ListVirtualHostProGuard.jar" />
+	<property name="deleteVirtualHostJarFilename" value="DeleteVirtualHost.jar" />
+	<property name="deleteVirtualHostProGuardJarFilename" value="DeleteVirtualHostProGuard.jar" />
+	<property name="docsdir" value="docs" />
+
+	<target name="clean" description="Removes binary files">
+		<mkdir dir="${compiledir}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+
+		<delete file="${listVirtualHostJarFilename}" />
+		<delete file="${deleteVirtualHostJarFilename}" />
+		<delete file="${addVirtualHostJarFilename}" />
+	</target>
+
+	<target name="compile" description="Compiles the virtual host configuration system">
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on" verbose="off" target="1.5" source="1.5">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar AddVirtualHost" depends="compile">
+		<jar destfile="${addVirtualHostJarFilename}" duplicate="preserve">
+			<fileset dir="${compiledir}" includes=" **/AddVirtualHost.class **/ServerXmlHandler.class **/FileCopy.class **/FileDelete.class **/DirectoryHandler.class **/ServerXmlException.class **/CheckPartition.class **/Common.class **/ExtractCertificatesForSSL.class" />
+			<fileset dir="." includes=" PinAgent.war agentconfiguration.xml pinagent-log4j.xml PinAgentVersion.txt log4j.dtd" />
+			<zipgroupfileset dir="${classpathdir}" excludes="LunaProvider.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.AddVirtualHost" />
+			</manifest>
+		</jar>
+		<!--Now unjar such that we can delete the signature files from included libraries-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${addVirtualHostJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${addVirtualHostJarFilename}" />
+		<jar destfile="${addVirtualHostJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.AddVirtualHost" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+
+	</target>
+
+
+	<target name="jar ListVirtualHost" depends="compile">
+		<jar destfile="${listVirtualHostJarFilename}" duplicate="preserve">
+			<fileset dir="${compiledir}" includes="**/ListVirtualHosts.class **/ServerXmlHandler.class **/ServerXmlException.class **/Common.class" />
+			<zipgroupfileset dir="${classpathdir}" excludes="LunaProvider.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.ListVirtualHosts" />
+
+			</manifest>
+		</jar>
+			<!--Now unjar such that we can delete the signature files from included libraries-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${listVirtualHostJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${listVirtualHostJarFilename}" />
+		<jar destfile="${listVirtualHostJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.ListVirtualHosts" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+	<target name="jar DeleteVirtualHost" depends="compile">
+		<jar destfile="${deleteVirtualHostJarFilename}" duplicate="preserve">
+			<fileset dir="${compiledir}" includes="**/DeleteVirtualHost.class **/ServerXmlHandler.class **/FileCopy.class **/FileDelete.class **/DirectoryHandler.class **/ServerXmlException.class **/CheckPartition.class **/Common.class" />
+			<zipgroupfileset dir="${classpathdir}" excludes="LunaJCASP.jar,LunaJCESP.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.DeleteVirtualHost" />
+
+			</manifest>
+		</jar>
+			<!--Now unjar such that we can delete the signature files from included libraries-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${deleteVirtualHostJarFilename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${deleteVirtualHostJarFilename}" />
+		<jar destfile="${deleteVirtualHostJarFilename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Version" value="${version}" />
+				<attribute name="Main-Class" value="com.safenetinc.luna.virtualhosts.DeleteVirtualHost" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+
+	<target name="jar" depends="jar AddVirtualHost,jar ListVirtualHost,jar DeleteVirtualHost">
+	</target>
+
+	<target name="obfuscate" depends="jar">
+		<taskdef resource="proguard/ant/task.properties" classpath="proguard/proguard.jar" />
+		<proguard configuration="proguard/configurations/AddVirtualHost.pro" />
+		<move file="${addVirtualHostProGuardJarFilename}" tofile="${addVirtualHostJarFilename}" />
+
+		<proguard configuration="proguard/configurations/ListVirtualHost.pro" />
+		<move file="${listVirtualHostProGuardJarFilename}" tofile="${listVirtualHostJarFilename}" />
+		<proguard configuration="proguard/configurations/DeleteVirtualHost.pro" />
+		<move file="${deleteVirtualHostProGuardJarFilename}" tofile="${deleteVirtualHostJarFilename}" />
+
+
+	</target>
+
+	<target name="buildcomplete" depends="jar" />
+
+</project>

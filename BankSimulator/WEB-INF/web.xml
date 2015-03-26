@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+	<display-name>Bank Simulator</display-name>
+	<description>Provides a mechanism for customers to retrieve a
+		PIN number for their credit card</description>
+	<servlet>
+		<servlet-name>BankSimulator</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.BankSimulatorServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.LoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SelectPINServlet</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.SelectPINServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ChangePINServlet</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.ChangePINServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ViewConfigurationServlet</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.ViewConfigurationServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>LogoutServlet</servlet-name>
+		<servlet-class>com.safenetinc.viewpin.banksimulator.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BankSimulator</servlet-name>
+		<url-pattern>/bank</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SelectPINServlet</servlet-name>
+		<url-pattern>/selectPIN</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ChangePINServlet</servlet-name>
+		<url-pattern>/changePIN</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewConfigurationServlet</servlet-name>
+		<url-pattern>/viewconfig</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>LogoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	     
+	<session-config>
+		<session-timeout>10</session-timeout>
+	</session-config>
+	        
+</web-app>

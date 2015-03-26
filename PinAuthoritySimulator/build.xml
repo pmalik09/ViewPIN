@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project name="PIN Authority Simulator" default="compile">
+	<description>
+            description
+    </description>
+	<property name="srcdir" value="src" />
+	<property name="compiledir" value="bin" />
+	<property name="jarfilename" value="pinauthority.jar" />
+	<property name="createkeystorename" value="CreateAuthorityKeyStore.jar" />
+	<property name="classpathdir" value="lib" />
+	<property name="tempdir" value="temp" />
+
+
+	<!--Removes all class files and the jar file-->
+	<target name="clean">
+		<delete file="${jarfilename}" />
+		<mkdir dir="${compiledir}"/>
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="compile" depends="clean" description="Compile the PIN Authority Simulator">
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+
+
+	<target name="jarCreateAuthorityKeyStore" depends="compile">
+		<!-- Call to SVN executable 
+		<exec outputproperty="version" executable="svnversion">
+			<arg value="-n" />
+		</exec>
+		-->
+		<jar destfile="${createkeystorename}">
+			<fileset dir="${compiledir}" includes="**/CreateKeyStore.class" />
+			<zipgroupfileset dir="${classpathdir}" />
+		</jar>
+		<!-- Remove the signature from any jar files that have been imported-->
+		<mkdir dir="${tempdir}" />
+		<unjar src="${createkeystorename}" dest="${tempdir}">
+			<patternset>
+				<include name="**" />
+				<exclude name="META-INF/*.SF" />
+				<exclude name="META-INF/*.DSA" />
+				<exclude name="META-INF/*.RSA" />
+			</patternset>
+		</unjar>
+		<delete file="${createkeystorename}" />
+		<jar destfile="${createkeystorename}">
+			<fileset dir="${tempdir}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.safenetinc.viewpin.simulator.authority.CreateKeyStore" />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+		</jar>
+		<delete dir="${tempdir}" />
+	</target>
+
+	<target name="buildcomplete" depends="jarCreateAuthorityKeyStore" />
+
+</project>

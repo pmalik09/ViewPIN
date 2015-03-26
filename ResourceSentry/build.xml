@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<project name="Resource Sentry" default="compile">
+
+	<property name="srcdir" value="src" />
+	<property name="classpathdir" value="lib" />
+	<property name="compiledir" value="bin" />
+	<property name="jarfilename" value="resourcesentry.jar" />
+
+	<target name="clean">
+		 <mkdir dir="${compiledir}" />
+		<delete file="${jarfilename}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${compiledir}" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="jar" depends="compile" description="Create Jar">
+		<jar destfile="${jarfilename}">
+			<fileset dir="${compiledir}" excludes="**/*Test.class" />
+			<zipgroupfileset dir="${classpathdir}" excludes="servlet-api.jar,commons-logging.jar" />
+		</jar>
+	</target>
+
+
+	<target name="compile">
+		 <mkdir dir="${compiledir}" />
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on" verbose="off" target="1.6" source="1.6">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="buildcomplete" depends="jar">
+	</target>
+
+</project>

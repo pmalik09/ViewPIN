@@ -1,0 +1,253 @@
+<project name="ViewPIN Release Build" default="Create New ViewPIN Release">
+	<description>
+            Creates release builds of the ViewPIN system
+    </description>
+
+	<property file="masterbuild.properties" />
+	<property name="releasedir" value="ViewPIN Release" />
+	<property name="binarydir" value="${releasedir}/Binaries" />
+	<property name="banksimulatorreleasedir" value="${releasedir}/Bank Simulator" />
+	<property name="apidocsdir" value="${releasedir}/API Documentation" />
+	<property name="docsdir" value="${releasedir}/Documentation" />
+	<property name="configurationdir" value="Configuration Files" />
+	<property name="releaseconfigurationdir" value="Configuration" />
+	<property name="schemasdir" value="schemas" />
+	<property name="releasesourcedir" value="${releasedir}/Source Code" />
+	<property name="releaseschemasdir" value="${releasedir}/Schemas" />
+	<property name="versionfile" value="${releasedir}/ViewPIN.release" />
+	<property name="buildtarget" value="buildcomplete" />
+	<property name="cleantarget" value="clean" />
+
+
+	<target name="-update">
+		 <!--
+		 <exec executable="svn">
+			<arg value="update" />
+		</exec>
+		-->
+	</target>
+
+	<target name="-getversion" depends="-update">
+		<!-- Manmeet  
+		<exec outputproperty="version" executable="svnversion">
+			<arg value="-n" />
+		</exec>
+		-->
+	</target>
+
+	<target name="-build" depends="-getversion"> 
+		<echo>Commencing ViewPIN Master Build. Creating release version ${version}</echo>
+		<!--For each project that forms part of the ViewPIN system invoke the buildcomplete option-->
+		<echo>Building PINAgent</echo>
+		<ant dir="${PinAgentDir}" target="${buildtarget}" />
+		
+		<copy todir="${VirtualHostDir}">
+		<fileset dir="${PinAgentDir}">
+				<include name="*.war" />
+		</fileset>
+		</copy>
+		<echo>Building KeyManagement Utilities</echo>
+		<ant dir="${KeyManagementDir}" target="${buildtarget}" />
+
+		<echo>Building Virtual Hosts utilities</echo>
+		<ant dir="${VirtualHostDir}" target="${buildtarget}" />
+
+		<echo>Building PINAuthority</echo>
+		<ant dir="${PinAuthorityDir}" target="${buildtarget}" />
+
+		<echo>Building Protected Area File Manager utility</echo>
+		<ant dir="${ProtectedAreaFileManagerDir}" target="${buildtarget}" />
+
+		<echo>Building Resource Sentry valve</echo>
+		<ant dir="${ResourceSentryDir}" target="${buildtarget}" />
+
+		<echo>Building BankSimulator</echo>
+		<ant dir="${BankSimulatorDir}" target="${buildtarget}" />
+	</target>
+
+
+	<target name="-copyfiles"  depends="-build" description="Copies all of the binary files to the binaries directory">
+		<!--Copy core ViewPIN binaries to distribution directory-->
+		<copy todir="${binarydir}">
+			<fileset dir="${PinAgentDir}">
+				<include name="*.war" />
+			</fileset>
+			<fileset dir="${PinAgentDir}">
+					<include name="*.jar" />
+				</fileset>
+			<fileset dir="${KeyManagementDir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${VirtualHostDir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${ProtectedAreaFileManagerDir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${ProviderAlgorithmSelectorDir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${ResourceSentryDir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${PinAuthorityDir}">
+				<include name="*.jar" />
+				<include name="*.war" />
+			</fileset>
+			<fileset dir="${CJavaInterfaceDir}">
+			    <include name="MofnAuthentication.zip" />
+			</fileset>
+		</copy>
+	
+		
+		<!--Copy Bank Simulator binaries to their distribution directory-->
+		<copy todir="${banksimulatorreleasedir}">
+			<fileset dir="${BankSimulatorDir}">
+				<include name="*.war" />
+			</fileset>
+		</copy>
+
+		<!--Copy PINAgent auto upload files to distribution directory-->
+		<copy todir="${releasedir}">
+			<fileset dir="${BuildPinAgentDir}">
+				<include name="*" />
+			</fileset>
+		</copy>
+
+		<!--Copy configuration files to configuration directory-->
+		<copy todir="${releasedir}/${releaseconfigurationdir}">
+			<fileset dir="${ResourceSentryDir}/${configurationdir}">
+				<include name="resourcesentry.properties" />
+			</fileset>
+			<fileset dir="${ResourceSentryDir}/${configurationdir}">
+				<include name="resourcesentry-log4j.xml" />
+			</fileset>
+			
+		</copy>
+		
+		
+		
+		<!--Copy documentation to documentation folder-->
+		<copy todir="${docsdir}">
+			<fileset dir="ViewPINDocumentation">
+				<include name="**/*" />
+				<exclude name=".project" />
+			</fileset>
+		</copy>
+
+		<!--Copy schemas to release dir-->
+		<copy todir="${releaseschemasdir}">
+			<fileset dir="${PinAgentDir}/${schemasdir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+		<!--Copy BankSimulator and Authority source code-->
+		
+		<copy todir="${releasesourcedir}/Bank Simulator">
+			<fileset dir="${BankSimulatorDir}/src">
+				<include name="**/*.java" />
+			</fileset>
+		</copy>
+
+	</target>
+
+	<target name="-clean" description="Cleans the subversion externals directories of build related files">
+		<echo>Cleaning PINAgent</echo>
+		<ant dir="${PinAgentDir}" target="${cleantarget}" />
+
+		<echo>Cleaning BankSimulator</echo>
+		<ant dir="${BankSimulatorDir}" target="${cleantarget}" />
+
+		<echo>Cleaning KeyManagement Utilities</echo>
+		<ant dir="${KeyManagementDir}" target="${cleantarget}" />
+
+		<echo>Cleaning Virtual Hosts utilities</echo>
+		<ant dir="${VirtualHostDir}" target="${cleantarget}" />
+
+		<echo>Cleaning PINAuthority </echo>
+		<ant dir="${PinAuthorityDir}" target="${cleantarget}" />
+
+		<echo>Cleaning Protected Area File Manager utility</echo>
+		<ant dir="${ProtectedAreaFileManagerDir}" target="${cleantarget}" />
+
+		<echo>Cleaning Provider Algorithm Selector valve</echo>
+		<ant dir="${ProviderAlgorithmSelectorDir}" target="${cleantarget}" />
+
+		<echo>Cleaning Resource Sentry valve</echo>
+		<ant dir="${ResourceSentryDir}" target="${cleantarget}" />
+	</target>
+
+
+	<target name="-generateDocs">
+
+		<javadoc destDir="${apidocsdir}">
+			<fileset dir="${BankSimulatorDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${KeyManagementDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${VirtualHostDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${PinAgentDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${PinAuthorityDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${ProtectedAreaFileManagerDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${ResourceSentryDir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+
+			<classpath>
+				<fileset dir="${BankSimulatorDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${KeyManagementDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${VirtualHostDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${PinAgentDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${PinAuthorityDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${ProtectedAreaFileManagerDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+				
+				<fileset dir="${ResourceSentryDir}/lib" defaultexcludes="yes">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="-createreleasenumberfile" depends="-getversion">
+		<delete file="${versionfile}" />
+		<echo file="${versionfile}">ViewPIN Release Version ${version}</echo>
+	</target>
+
+	<target name="-commit" depends="-copyfiles,-generateDocs,-createreleasenumberfile">
+
+		<!--Add any new release files to version control-->
+	
+	</target>
+
+	<target name="-createarchive" depends="-copyfiles">
+		<zip destfile="${releaseArchiveFile}" basedir="${releasedir}">
+			<exclude name="**/.svn/**" />
+		</zip>
+	</target>
+
+	<target name="Create New ViewPIN Release" depends="-commit,-createarchive,-clean">
+	</target>
+</project>

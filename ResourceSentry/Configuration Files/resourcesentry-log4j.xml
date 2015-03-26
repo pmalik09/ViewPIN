@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+	 	<param name="threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d{ISO8601} %p %c %X{loggingIdentifier} %X{clientIpAddress} %X{transactionIdentifier} %m%n"/>
+		</layout>
+	</appender>
+	
+	<appender name="syslog" class="org.apache.log4j.net.SyslogAppender">
+		<param name="syslogHost" value="syslog.bank.com" />
+		<param name="facility" value="user"/>
+		<param name="facilityPrinting" value="false"/>
+		<param name="threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="conversionPattern" value="%d{ISO8601} %p %c %X{loggingIdentifier} %X{clientIpAddress} %X{transactionIdentifier} %m%n"/>
+		</layout>
+	</appender>
+
+	<category name="com.safenetinc.luna.resourcesentry" additivity="false">
+		<priority value="ERROR"/>
+		<appender-ref ref="syslog"/>
+		<appender-ref ref="stdout"/>
+	</category>
+	
+	<category name="org.apache.commons.configuration.ConfigurationUtils"  additivity="false" >
+	    <priority value="OFF" />
+	</category>
+
+</log4j:configuration>

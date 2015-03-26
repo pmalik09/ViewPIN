@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<project name="ConnectorThrottle" default="compile">
+
+	<property name="srcdir" value="src" />
+	<property name="build" value="bin" />
+	<property name="classpathdir" value="lib" />
+	<property name="compiledir" value="bin" />
+	<property name="jar" value="ConnectorThrottle.jar" />
+	
+	<target name="init" >
+			
+	    <mkdir dir="${build}" />
+			
+	</target>
+
+	<target name="compile">
+		<javac srcdir="${srcdir}" destdir="${compiledir}" debug="on" verbose="off" target="1.5" source="1.5">
+			<classpath>
+				<fileset dir="${classpathdir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar destfile="${jar}">
+			<fileset dir="${compiledir}"/>
+			<zipgroupfileset dir="${classpathdir}" excludes="servlet-api.jar,catalina.jar,mx4j.jar,jmx.jar,commons-logging-1.0.4.jar" />
+		</jar>
+	</target>
+	
+	<target name="clean" >
+		 <mkdir dir="${build}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${build}" includes="**/*"/>
+		</delete>
+				
+		<delete file="${jar}" />
+			
+	</target>
+	
+</project>
